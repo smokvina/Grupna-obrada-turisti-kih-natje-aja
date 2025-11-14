@@ -198,6 +198,12 @@ p {
     color: #c53030;
 }
 
+.result-item.error strong {
+  color: #9b2c2c;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
 .result-item h3 {
   margin-top: 0;
   margin-bottom: 0.75rem;

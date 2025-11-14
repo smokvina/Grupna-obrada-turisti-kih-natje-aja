@@ -62,7 +62,7 @@ if (root) {
     const option = document.createElement('option');
     option.value = opt.value;
     option.textContent = opt.text;
-    if (opt.value === 'srednji') {
+    if (opt.value === 'detaljan') {
       option.selected = true;
     }
     summarySelect.appendChild(option);
@@ -128,7 +128,7 @@ if (root) {
       
       const detailLevel = summarySelect.value;
       let promptText;
-      const basePrompt = "Odgovori na hrvatskom jeziku. Napravi detaljan Logistički plan sa maksimalnim detaljima. budi stručnjak u logistici, organiziaciji putovanja, turistički djelatnike, agencijski djelatnik, prijevoznik, vozač, iskusni vodič, vlasnik hotela, vlasnik restorana, voditelj restorana, lokalni vodič, vodič i domačin u mjestima koja posječujemo kao što su parkovi i muzeji. ";
+      const basePrompt = "Odgovori na hrvatskom jeziku. Nadogradi obradu natječaja: 1. Detaljno pročitati, analizirati i organizirati natječaj! 2. Označiti bitne stavke natječaja (datum do kojeg se natječaj šalje,hotel,prijevoz,broj djece/odraslih,ulaznice,od kojeg do kojeg datuma je izlet,koliko dana) 3. Pronaći sve cijene koje se traže iz natječaja (ulaznice, smještaj, razgledi, obroci) - provjeriti na interentu i saznati za cijene djece i cijenu za odrasle pitati 4. Pronaći smještaj na traženoj destinaciji (hotel) - napraviti popis hotela na destinaciji koji bi mogli odgovorarati našim grupama i kontaktirati hotele da nam pošalju ponudu za grupu prema natječaju 5. Napraviti kalkulaciju za izlet prema svim podacima koje imamo za izlet 6. Napraviti gotov program putovanja sa svim elementima za slanje emailom ili poštom. ";
       switch(detailLevel) {
         case 'kratak':
           promptText = basePrompt + "Analiziraj i pruži kratak sažetak u jednom odlomku za sljedeći dokument vezan uz natječajnu prijavu:";
@@ -229,10 +229,26 @@ if (root) {
           resultItem.appendChild(downloadButton);
 
         } catch (error) {
-           resultText.textContent = 'Greška pri obradi ove datoteke.';
-           resultItem.classList.add('error'); // Add error class to item
-           itemLoader.style.display = 'none'; // Hide loader on error
            console.error(`Error processing ${file.name}:`, error);
+           let detailedErrorMessage = 'Došlo je do nepoznate greške.';
+ 
+           if (error instanceof Error) {
+             if (error.message.includes('API key not valid')) {
+                 detailedErrorMessage = 'Vaš API ključ nije ispravan. Molimo provjerite ga i pokušajte ponovo.';
+             } else if (error.message.includes('400')) {
+                 detailedErrorMessage = 'Datoteka je vjerojatno u nepodržanom formatu ili je oštećena. Molimo provjerite datoteku.';
+             } else if (error.message.includes('500')) {
+                 detailedErrorMessage = 'Došlo je do greške na servisu. Molimo pokušajte ponovo kasnije.';
+             } else if (error.message.includes('deadline')) {
+                detailedErrorMessage = 'Obrada je predugo trajala. Pokušajte s manjom datotekom ili provjerite svoju internetsku vezu.';
+             } else {
+                 detailedErrorMessage = 'Molimo provjerite konzolu za tehničke detalje.';
+             }
+           }
+ 
+           resultText.innerHTML = `<strong>Neuspjela obrada.</strong><br>${detailedErrorMessage}`;
+           resultItem.classList.add('error');
+           itemLoader.style.display = 'none';
         }
       }
 
