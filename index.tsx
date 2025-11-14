@@ -125,11 +125,10 @@ if (root) {
     try {
       const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
       const model = 'gemini-2.5-flash';
-      const files = Array.from(fileInput.files);
       
       const detailLevel = summarySelect.value;
       let promptText;
-      const basePrompt = "Odgovori na hrvatskom jeziku. ";
+      const basePrompt = "Odgovori na hrvatskom jeziku. Napravi detaljan Logistički plan sa maksimalnim detaljima. budi stručnjak u logistici, organiziaciji putovanja, turistički djelatnike, agencijski djelatnik, prijevoznik, vozač, iskusni vodič, vlasnik hotela, vlasnik restorana, voditelj restorana, lokalni vodič, vodič i domačin u mjestima koja posječujemo kao što su parkovi i muzeji. ";
       switch(detailLevel) {
         case 'kratak':
           promptText = basePrompt + "Analiziraj i pruži kratak sažetak u jednom odlomku za sljedeći dokument vezan uz natječajnu prijavu:";
@@ -143,6 +142,8 @@ if (root) {
           break;
       }
 
+      // FIX: The 'files' variable was not defined. It should be created from 'fileInput.files'.
+      const files = Array.from(fileInput.files);
       for (const file of files) {
         const resultItem = document.createElement('div');
         resultItem.className = 'result-item';
